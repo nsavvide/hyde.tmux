@@ -121,19 +121,22 @@ mean_channel_delta() {
     'BEGIN { printf "%.2f\n", ((cr-br)+(cg-bg_r)+(cb-bb))/3 }'
 }
 
-# Find first color brighter (or darker in light mode) than bg.
+# Find first color with enough contrast against bg.
 # Usage: first_brighter_than_bg <bg_hex> <light_mode:0|1> <color1> [color2 ...]
 first_brighter_than_bg() {
   local bg="$1" light="$2"
   shift 2
   local color delta
+  local threshold=40 # Minimum contrast difference required
   for color in "$@"; do
     [[ -z "$color" ]] && continue
     delta=$(mean_channel_delta "$color" "$bg")
     if [[ "$light" -eq 1 ]]; then
-      awk -v d="$delta" 'BEGIN { exit (d < 0) ? 0 : 1 }' && echo "$color" && return
+      # In light mode, color must be significantly darker
+      awk -v d="$delta" -v t="-$threshold" 'BEGIN { exit (d < t) ? 0 : 1 }' && echo "$color" && return
     else
-      awk -v d="$delta" 'BEGIN { exit (d > 0) ? 0 : 1 }' && echo "$color" && return
+      # In dark mode, color must be significantly brighter
+      awk -v d="$delta" -v t="$threshold" 'BEGIN { exit (d > t) ? 0 : 1 }' && echo "$color" && return
     fi
   done
 }
