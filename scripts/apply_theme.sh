@@ -139,6 +139,12 @@ apply_theme() {
   [[ -n "$effective_bg" && -n "$fg" ]] && \
     tmux set-option -g status-right-style "bg=${effective_bg},fg=${fg}"
 
+  # Reset format strings so inline colors from other themes don't override styles
+  tmux set-window-option -gu window-status-format
+  tmux set-window-option -gu window-status-current-format
+  tmux set-window-option -gu window-status-activity-style
+  tmux set-window-option -gu window-status-bell-style
+
   # Inactive window tab
   [[ -n "$effective_bg" && -n "$inactive_tab_fg" ]] && \
     tmux set-option -g window-status-style "bg=${effective_bg},fg=${inactive_tab_fg}"
