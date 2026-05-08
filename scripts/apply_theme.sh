@@ -137,14 +137,6 @@ apply_theme() {
 	local selection_bg
 	selection_bg=$(first_of "${p[selection_bg]}" "$tab_fallback" "$effective_bg")
 
-	# --- DEBUG INFO ---
-	echo "Theme file path : $file_path"
-	echo "Parsed bg       : '${bg}'"
-	echo "Parsed fg       : '${fg}'"
-	echo "Effective bg    : '${effective_bg}'"
-	echo "Inactive tab fg : '${inactive_tab_fg}'"
-	echo "------------------"
-
 	# -------------------------------------------------------------------------
 	# Apply tmux options
 	# -------------------------------------------------------------------------
