@@ -109,3 +109,8 @@ Colors are read from the Kitty theme file using the standard 16-color terminal p
 | `active_tab_bg`   | `active_tab_background`|
 | `inactive_tab_bg` | `inactive_tab_background`|
 | `inactive_tab_fg` | `inactive_tab_foreground`|
+
+# Credits
+
+[Hyde.nvim](https://github.com/iamharshdabas/hyde.nvim)
+
