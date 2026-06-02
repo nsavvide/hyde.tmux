@@ -177,9 +177,8 @@ apply_theme() {
   [[ -n "$effective_bg" && -n "$fg" ]] &&
     tmux set-option -g message-command-style "bg=${effective_bg},fg=${fg}"
 
-  # Copy / selection mode
-  [[ -n "$selection_bg" && -n "$fg" ]] &&
-    tmux set-option -g mode-style "bg=${selection_bg},fg=${fg},dim"
+  # Copy / selection mode — reverse is theme-independent (always contrasts)
+  tmux set-option -g mode-style "reverse,dim"
 
   # Clock mode color
   [[ -n "${p[blue]}" ]] &&
