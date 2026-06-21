@@ -113,6 +113,25 @@ apply_theme() {
   local active_tab_bg
   active_tab_bg=$(first_of "${p[active_tab_bg]}" "$tab_fallback" "$effective_bg")
 
+  # Verify active tab has enough contrast vs status bar; generate a shifted color as last resort
+  local verified_active_bg
+  verified_active_bg=$(first_brighter_than_bg \
+    "$effective_bg" "$light_mode" \
+    "$active_tab_bg" \
+    "${p[selection_bg]}" \
+    "${p[blue]}" \
+    "${p[cyan]}" \
+    "${p[magenta]}")
+  if [[ -n "$verified_active_bg" ]]; then
+    active_tab_bg="$verified_active_bg"
+  elif [[ -n "$effective_bg" ]]; then
+    if [[ "$light_mode" -eq 1 ]]; then
+      active_tab_bg=$(darken_hex "$effective_bg" 25)
+    else
+      active_tab_bg=$(brighten_hex "$effective_bg" 35)
+    fi
+  fi
+
   # Use the contrast loop to find a legible inactive tab foreground color
   local inactive_tab_fg
   inactive_tab_fg=$(first_brighter_than_bg \

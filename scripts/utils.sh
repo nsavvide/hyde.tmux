@@ -82,6 +82,26 @@ is_light() {
   awk -v l="$lum" 'BEGIN { exit (l >= 0.5) ? 0 : 1 }'
 }
 
+# Brighten a hex color by a percentage (0-100).
+brighten_hex() {
+  local hex="${1#\#}"
+  local pct="${2:-10}"
+  if [[ ${#hex} -eq 3 ]]; then
+    hex="${hex:0:1}${hex:0:1}${hex:1:1}${hex:1:1}${hex:2:1}${hex:2:1}"
+  fi
+  [[ ${#hex} -ne 6 ]] && echo "#$hex" && return
+  local r=$((16#${hex:0:2}))
+  local g=$((16#${hex:2:2}))
+  local b=$((16#${hex:4:2}))
+  awk -v r="$r" -v g="$g" -v b="$b" -v p="$pct" '
+    function clamp(v) { return (v<0)?0:(v>255)?255:v }
+    BEGIN {
+      ratio = 1 + p/100
+      printf "#%02x%02x%02x\n", clamp(int(r*ratio+0.5)), clamp(int(g*ratio+0.5)), clamp(int(b*ratio+0.5))
+    }
+  '
+}
+
 # Darken a hex color by a percentage (0-100).
 darken_hex() {
   local hex="${1#\#}"
