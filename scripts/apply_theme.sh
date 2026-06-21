@@ -126,10 +126,20 @@ apply_theme() {
     active_tab_bg="$verified_active_bg"
   elif [[ -n "$effective_bg" ]]; then
     if [[ "$light_mode" -eq 1 ]]; then
-      active_tab_bg=$(darken_hex "$effective_bg" 25)
+      active_tab_bg=$(darken_hex "$effective_bg" 20)
     else
-      active_tab_bg=$(brighten_hex "$effective_bg" 35)
+      active_tab_bg=$(brighten_hex "$effective_bg" 20)
     fi
+  fi
+
+  # Pick active tab foreground that contrasts against active_tab_bg
+  local active_tab_fg
+  if [[ -n "$active_tab_bg" ]] && is_light "$active_tab_bg"; then
+    # bright active bg → need dark text
+    active_tab_fg=$(first_of "${p[bg]}" "${p[black]}" "#000000")
+  else
+    # dark active bg → need light text
+    active_tab_fg=$(first_of "$fg" "${p[white_bright]}" "${p[white]}" "#ffffff")
   fi
 
   # Use the contrast loop to find a legible inactive tab foreground color
@@ -181,8 +191,8 @@ apply_theme() {
     tmux set-option -g window-status-style "bg=${effective_bg},fg=${inactive_tab_fg}"
 
   # Active window tab
-  [[ -n "$active_tab_bg" && -n "$fg" ]] &&
-    tmux set-option -g window-status-current-style "bg=${active_tab_bg},fg=${fg},bold"
+  [[ -n "$active_tab_bg" && -n "$active_tab_fg" ]] &&
+    tmux set-option -g window-status-current-style "bg=${active_tab_bg},fg=${active_tab_fg},bold"
 
   # Pane borders
   [[ -n "$border_fg" ]] &&
