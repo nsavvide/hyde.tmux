@@ -180,9 +180,13 @@ apply_theme() {
   [[ -n "$effective_bg" && -n "$fg" ]] &&
     tmux set-option -g status-right-style "bg=${effective_bg},fg=${fg}"
 
-  # Reset format strings so inline colors from other themes don't override styles
-  tmux set-window-option -gu window-status-format
-  tmux set-window-option -gu window-status-current-format
+  # Reset format strings only if they carry inline colors that would override our
+  # styles; a plain user format (padding, #I/#W layout) is left alone.
+  for opt in window-status-format window-status-current-format; do
+    case "$(tmux show-window-option -gv "$opt" 2>/dev/null)" in
+    *'#['*) tmux set-window-option -gu "$opt" ;;
+    esac
+  done
   tmux set-window-option -gu window-status-activity-style
   tmux set-window-option -gu window-status-bell-style
 
